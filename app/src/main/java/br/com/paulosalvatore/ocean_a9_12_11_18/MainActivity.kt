@@ -8,17 +8,27 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.doAsync
 import java.net.URL
 
 class MainActivity : AppCompatActivity() {
 
 	companion object {
-		private const val URL_IMAGEM = "https://i2.wp.com/mapinguanerd.com.br/wp-content/uploads/2017/02/curso-samsung-ocean-jogo-5.jpg"
+		private const val URL_IMAGEM =
+			"https://i2.wp.com/mapinguanerd.com.br/wp-content/uploads/2017/02/curso-samsung-ocean-jogo-5.jpg"
 	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
+
+		doAsync {
+			val bitmap = loadImage(URL_IMAGEM)
+
+			runOnUiThread {
+				ivImagem.setImageBitmap(bitmap)
+			}
+		}
 
 		btWorker.setOnClickListener {
 			workerThread()
@@ -46,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 	private fun loadImage(urlImagem: String) = try {
 		val url = URL(urlImagem)
 		val bitmap = BitmapFactory.decodeStream(
-				url.openConnection().getInputStream()
+			url.openConnection().getInputStream()
 		)
 
 		bitmap
